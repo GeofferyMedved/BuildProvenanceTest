@@ -1,0 +1,35 @@
+name: BuildProvenanceTest
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+
+
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Checkout Git Repo
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
+      - name: Hello World
+        shell: sh
+        run: |
+          echo "Hello World" > hw.txt
+
+      - name: Create zip of published artifacts
+        shell: sh
+        run: |
+          zip -r artifact.zip *
+
+      - name: Generate Build Provenance
+        uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1 # v1.4.2
+        with:
+          subject-path: "${{ github.workspace }}/artifact.zip"
